@@ -1,5 +1,5 @@
-use actix_web::middleware;
-use actix_web::{HttpRequest, HttpResponse, post,web, App, HttpServer};
+use actix_web::{HttpRequest, HttpResponse, post,web, App, HttpServer, middleware};
+use actix_web::middleware::Logger;
 mod authentification;
 use crate::authentification::auth::Auth;
 use crate::authentification::middleware_auth;
@@ -10,6 +10,7 @@ mod route;
 mod borg_script;
 mod stream_http;
 use crate::route::{get_list, get_repot_key, get_ssh_pub_key_server, send_ssh_key, send_ssh_key_tunnel, signin, signup, restore, get_log};
+
 
 #[post("/imaconnected")]
 async fn imaconnected(req: HttpRequest) -> Result<HttpResponse, APIError>{
@@ -36,6 +37,7 @@ async fn main() -> std::io::Result<()> {
         .service(
             web::scope("/api")
             .wrap(middleware::from_fn(middleware_auth::authentification_middleware))
+            .wrap(Logger::default())
             .service(signup::signup)
             .service(signin::signin)
             .service(imaconnected)
