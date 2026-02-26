@@ -11,4 +11,4 @@ EOF
 chmod 600 -R $SSH_DIRECTORY/*
 chown api:api -R $SSH_DIRECTORY
 chown api:api /usr/local/bin/strongholer
-su api -c  "RUST_LOG=info /usr/local/bin/strongholer"
+su api -c /usr/local/bin/strongholer
