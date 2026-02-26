@@ -9,7 +9,7 @@ async fn signup(id: web::Json<Login>, auth: web::Data<Auth>) -> Result<HttpRespo
         username: id.username.clone(), 
         password: id.password.clone()
     };
-
+    log::info!("test");
     // Création du Token
     let token = auth.signup(login).await?;
 

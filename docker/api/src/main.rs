@@ -29,7 +29,6 @@ async fn imaconnected(req: HttpRequest) -> Result<HttpResponse, APIError>{
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let auth = Auth::new().await;
-    println!("connection db et ssh réussi");
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     log::info!("connection db et ssh réussi");
     
