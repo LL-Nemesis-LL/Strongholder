@@ -103,6 +103,7 @@ impl error::ResponseError for APIError{
             //Encryption
             APIError::KDFError =>"400"
         };
+        log::info!("{}", response);
         HttpResponse::BadRequest().body(response)
     }
 }
