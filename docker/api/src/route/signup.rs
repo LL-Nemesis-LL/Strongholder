@@ -9,7 +9,6 @@ async fn signup(id: web::Json<Login>, auth: web::Data<Auth>) -> Result<HttpRespo
         username: id.username.clone(), 
         password: id.password.clone()
     };
-    log::info!("test");
     // Création du Token
     let token = auth.signup(login).await?;
 
@@ -18,7 +17,7 @@ async fn signup(id: web::Json<Login>, auth: web::Data<Auth>) -> Result<HttpRespo
     .secure(true)
     .http_only(true)
     .finish();
-    println!("User: {} signup", id.username);
+    log::info!("User: {}", id.username);
     Ok(HttpResponse::Ok()
         .append_header(("Set-Cookie", cookie.to_string()))
         .finish())

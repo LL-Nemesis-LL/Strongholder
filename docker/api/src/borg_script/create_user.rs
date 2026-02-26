@@ -10,7 +10,7 @@ pub async fn create_user(uuid:&String, ssh_connexion: Arc<Session>)-> Result<(),
     let output = match ssh_connexion.command("sudo").args([&script_path, &uuid]).output().await{
         Ok(o)=>o,
         Err(e)=>{
-            println!("Erreur lors du create user{}", e.to_string());
+            log::info!("Erreur ssh{}", e.to_string());
             return Err(APIError::Ssh)
         }
     };
@@ -18,19 +18,19 @@ pub async fn create_user(uuid:&String, ssh_connexion: Arc<Session>)-> Result<(),
     let stdout = match String::from_utf8(output.stdout.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stdout UTF8 create_user");
+            log::info!("Erreur conversion stdout UTF8");
             return Err(APIError::UTF8)
         }
     };
     let stderr = match String::from_utf8(output.stderr.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stderr UTF8 create_user");
+            log::info!("Erreur conversion stderr UTF8");
             return Err(APIError::UTF8)
         }
     };
     if ! output.status.success(){
-        println!("Erreur lors de la création du user\nstdout {}\n stderr: {}", &stdout, &stderr);
+        log::info!("Erreur \nstdout {}\n stderr: {}", &stdout, &stderr);
         return Err(APIError::Script)
     }
     return Ok(())
@@ -40,7 +40,6 @@ pub async fn create_user(uuid:&String, ssh_connexion: Arc<Session>)-> Result<(),
 pub async fn get_master_key_1_encrypted(uuid:&String, ssh_connexion: Arc<Session>, sftp_connexion: Arc<Sftp>)-> Result<Vec<u8>, APIError>{
         // Ouverture de la clé borg 1
     let path_key = format!("{}/{}/bootstrap/{}.gpg", CLIENT_DIRECTORY,uuid, uuid);
-    println!("{}", path_key);
     let mut master_key_file = match sftp_connexion.open(&path_key).await {
         Ok(f)=>f,
         Err(_)=> {
@@ -52,7 +51,7 @@ pub async fn get_master_key_1_encrypted(uuid:&String, ssh_connexion: Arc<Session
     let master_key_metadata = match master_key_file.metadata().await{
         Ok(meta)=>meta,
         Err(_)=>{
-            println!("Erreur lors de la lecture des metadata clé borg 1 get_master_key_1_encrypted");
+            log::info!("Erreur lors de la lecture des metadata clé borg 1");
             return Err(APIError::Metadata)
         }
     };
@@ -60,12 +59,12 @@ pub async fn get_master_key_1_encrypted(uuid:&String, ssh_connexion: Arc<Session
         Some(size)=>match size.try_into(){
             Ok(size)=>size,
             Err(_)=>{
-                println!("Erreur lors de la converion u64 to usize get_master_key_1_encrypted");
+                log::info!("Erreur lors de la converion u64 to usize");
                 return Err(APIError::Usize)
             }
         },
         None=>{
-            println!("Longueur de laclé Borg 1 vide");
+            log::info!("Longueur de la clé Borg 1 vide");
             return Err(APIError::NoFile)
         }
     };
@@ -77,26 +76,26 @@ pub async fn get_master_key_1_encrypted(uuid:&String, ssh_connexion: Arc<Session
     let output = match ssh_connexion.command("shred").args(["-u", &path_key]).output().await{
         Ok(o)=>o,
         Err(_)=> {
-            println!("Erreur command ssh rm key");
+            log::info!("Erreur ssh");
             return Err(APIError::Ssh)
         }
     };
     let stdout = match String::from_utf8(output.stdout.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stdout UTF8 get_master_key_1_encrypted");
+            log::info!("Erreur conversion stdout UTF8");
             return Err(APIError::UTF8)
         }
     };
     let stderr = match String::from_utf8(output.stderr.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stderr UTF8 get_master_key_1_encrypted");
+            log::info!("Erreur conversion stderr UTF8");
             return Err(APIError::UTF8)
         }
     };
     if ! output.status.success(){
-        println!("Erreur lors de la supressionde la clé borg\nstdout {}\n stderr: {}", &stdout, &stderr);
+        log::info!("Erreur lors de la supressionde la clé borg\nstdout {}\n stderr: {}", &stdout, &stderr);
         return Err(APIError::Script)
     }
     return Ok(master_key_byte.to_vec())
@@ -105,11 +104,10 @@ pub async fn get_master_key_1_encrypted(uuid:&String, ssh_connexion: Arc<Session
 pub async fn get_master_key_2(uuid:&String, ssh_connexion: Arc<Session>, sftp_connexion: Arc<Sftp>)->Result<String, APIError>{
     // Ouverture de la clé borg
     let path_key = format!("{}/{}/.config/borg/keys/srv_repos_{}_repo", CLIENT_DIRECTORY,uuid, uuid).to_string();
-    println!("{}", path_key);
     let mut master_key_file = match sftp_connexion.open(&path_key).await {
         Ok(f)=>f,
         Err(_)=> {
-            println!("Erreur lors de l'ouverture de la clé borg");
+            log::info!("Erreur lors de l'ouverture de la clé borg");
             return Err(APIError::Sftp)}
     };
 
@@ -117,7 +115,7 @@ pub async fn get_master_key_2(uuid:&String, ssh_connexion: Arc<Session>, sftp_co
     let master_key_metadata = match master_key_file.metadata().await{
         Ok(meta)=>meta,
         Err(_)=>{
-            println!("Erreur lors de la lecture des metadata clé borg create_user");
+            log::info!("Erreur lors de la lecture des metadata clé borg");
             return Err(APIError::Metadata)
         }
     };
@@ -125,12 +123,12 @@ pub async fn get_master_key_2(uuid:&String, ssh_connexion: Arc<Session>, sftp_co
         Some(size)=>match size.try_into(){
             Ok(size)=>size,
             Err(_)=>{
-                println!("Erreur lors de la converion u64 to usize create_user");
+                log::info!("Erreur lors de la converion u64 to usize");
                 return Err(APIError::Usize)
             }
         },
         None=>{
-            println!("Longueur de laclé Borg vide");
+            log::info!("Longueur de laclé Borg vide");
             return Err(APIError::NoFile)
         }
     };
@@ -139,33 +137,33 @@ pub async fn get_master_key_2(uuid:&String, ssh_connexion: Arc<Session>, sftp_co
     let buf= bytes::BytesMut::with_capacity(master_key_len);
     let master_key_byte = master_key_file.read_all(master_key_len, buf).await.expect("read all échoué");
     let Ok(master_key) = String::from_utf8(master_key_byte.to_vec())else {
-        println!("Erreur lors de la convertion byte to string create_user");
+        log::info!("Erreur lors de la convertion byte to string");
         return Err(APIError::UTF8)
     };
     // Supression de la clé borg
     let output = match ssh_connexion.command("shred").args(["-u", &path_key]).output().await{
         Ok(o)=>o,
         Err(_)=> {
-            println!("Erreur command ssh rm key");
+            log::info!("Erreur command ssh rm key");
             return Err(APIError::Ssh)
         }
     };
     let stdout = match String::from_utf8(output.stdout.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stdout UTF8 get_master_key_2");
+            log::info!("Erreur conversion stdout UTF8");
             return Err(APIError::UTF8)
         }
     };
     let stderr = match String::from_utf8(output.stderr.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stderr UTF8 get_master_key_2");
+            log::info!("Erreur conversion stderr UTF8");
             return Err(APIError::UTF8)
         }
     };
     if ! output.status.success(){
-        println!("Erreur lors de la supressionde la clé borg\nstdout {}\n stderr: {}", &stdout, &stderr);
+        log::info!("Erreur lors de la supressionde la clé borg\nstdout {}\n stderr: {}", &stdout, &stderr);
         return Err(APIError::Script)
     }
     return Ok(master_key)

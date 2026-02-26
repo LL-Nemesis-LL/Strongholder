@@ -97,12 +97,12 @@ impl Auth {
         }
 
         let username_for_encryption= Auth::corrrect_username_length(&login);
-        println!("Username for encryption : {}", username_for_encryption);
+        log::info!("Username for encryption : {}", username_for_encryption);
         /* Création des id client */
         let kdf_client = match self.create_kdf(&login.password, &username_for_encryption).await {
             Ok(kdf_client) => kdf_client,
             Err(e) => {
-                println!("Erreur lors de la création du kdf");
+                log::info!("Erreur lors de la création du kdf");
                 return Err(e);
             }
         };
@@ -131,11 +131,11 @@ impl Auth {
         let key_2_encrypted: String = self.encrypt_key(&kdf_client, master_key_2.as_bytes().to_vec())?;
 
         if key_1_encrypted.len()>1200{
-            println!("Erreur longueur de clé borg 1 encrypted signup: {}", key_1_encrypted.len());
+            log::info!("Erreur longueur de clé borg 1 encrypted signup: {}", key_1_encrypted.len());
             return Err(APIError::KDFError)
         }
         if key_2_encrypted.len()>1200{
-            println!("Erreur longueur de clé borg 1 encrypted signup : {}", key_2_encrypted.len());
+            log::info!("Erreur longueur de clé borg 1 encrypted signup : {}", key_2_encrypted.len());
             return Err(APIError::KDFError)
         }
 
@@ -167,7 +167,7 @@ impl Auth {
         let _ = match rand_bytes(&mut iv){
             Ok(_)=>(),
             Err(_)=>{
-                println!("Erreur lors de la génération aléatoire du iv");
+                log::info!("Erreur lors de la génération aléatoire du iv");
                 return Err(APIError::KDFError)
             }
         };
@@ -180,7 +180,7 @@ impl Auth {
         ){
             Ok(cipher)=>cipher,
             Err(_)=>{
-                println!("Erreur lors que la création du cypher");
+                log::info!("Erreur lors que la création du cypher");
                 return Err(APIError::KDFError)
             }
         };
@@ -188,14 +188,14 @@ impl Auth {
         let mut len_encrypted_data = match cipher.update(&master_key, &mut ciphertext){
             Ok(len)=>len,
             Err(_)=>{
-                println!("Erreur lors de l'encryption de la clé");
+                log::info!("Erreur lors de l'encryption de la clé");
                 return Err(APIError::KDFError)
             }
         };
         len_encrypted_data += match cipher.finalize(&mut ciphertext[len_encrypted_data..]){
             Ok(len)=>len,
             Err(_)=>{
-                println!("Erreur lors de la finalisation du chiffrement key_1");
+                log::info!("Erreur lors de la finalisation du chiffrement key_1");
                 return Err(APIError::KDFError)
             }
         };
@@ -203,7 +203,7 @@ impl Auth {
         let _ = match cipher.get_tag(&mut tag){
             Ok(_)=>(),
             Err(_)=>{
-                println!("Erreur lors de la récupération du tag GCM key_1");
+                log::info!("Erreur lors de la récupération du tag GCM key_1");
                 return Err(APIError::KDFError)
             }
         };
@@ -298,30 +298,29 @@ impl Auth {
     pub async fn restore_master_key_file(&self, credentials: &Credentials)-> Result<(),APIError>{
         let filename = format!("{}/{}/.config/borg/keys/srv_repos_{}_repo", 
         CLIENT_DIRECTORY, credentials.id, credentials.id);
-        println!(" Restauration de la clé {}", filename);
 
         //Vérification de la présence de la clé
         let output = match self.ssh_connexion.command("test")
         .args(["-f", filename.as_str()]).output().await{
             Ok(o)=>o,
-            Err(_)=>{println!("Erreur connexion ssh restore_master_2_file");return Err(APIError::Ssh)}
+            Err(_)=>{log::info!("Erreur connexion ssh restore_master_2_file");return Err(APIError::Ssh)}
         };
         let stdout = match String::from_utf8(output.stdout.clone()){
             Ok(out)=>out,
             Err(_)=>{
-                println!("Erreur conversion stdout UTF8 restore_master_2_file");
+                log::info!("Erreur conversion stdout UTF8 restore_master_2_file");
                 return Err(APIError::UTF8)
             }
         };
         let stderr = match String::from_utf8(output.stderr.clone()){
             Ok(out)=>out,
             Err(_)=>{
-                println!("Erreur conversion stderr UTF8 restore_master_2_file");
+                log::info!("Erreur conversion stderr UTF8 restore_master_2_file");
                 return Err(APIError::UTF8)
             }
         };
         if output.status.success(){
-            println!("Erreur la clé borg existe déjà restore_master_2_file : \
+            log::info!("Erreur la clé borg existe déjà restore_master_2_file : \
              \nStdout: {}\nErreur: {}", stdout, stderr);
             return Ok(())//Err(APIError::Script)
         }
@@ -331,13 +330,13 @@ impl Auth {
         let mut key_borg = match self.sftp_connexion.create(&filename).await {
             Ok(f)=>f,
             Err(e)=>{
-            println!("Ouverture du fichier pour écrire la clé borg: {}", e.to_string());
+            log::info!("Ouverture du fichier pour écrire la clé borg: {}", e.to_string());
             return Err(APIError::Sftp);
             }
         };
         match key_borg.write_all(&master_key_2).await{
             Ok(_)=>{
-            println!("clé restauré {}", filename);
+            log::info!("clé restauré {}", credentials.id);
             return Ok(())},
             Err(_)=> return Err(APIError::Write)
         };
@@ -350,7 +349,7 @@ impl Auth {
         encrypt_master_key_2  FROM Credentials WHERE id=?").bind(credentials.id.as_str());
         let result: Vec<MysqlCredentials> = query.fetch_all(&mut *conn).await.expect("Une erreur c'est produite");
         if result.len() != 1 {
-            println!("L'utilisateur {} n'est pas connue dans la base de données", credentials.id);
+            log::info!("L'utilisateur {} n'est pas connue dans la base de données", credentials.id);
             return Err(APIError::NotSignup);
         }
         // Déchiffrement de la clé
@@ -383,15 +382,15 @@ impl Auth {
         let (tag,ciphertext) = tag_ciphertext.split_at(GCM_TAG_LEN);
         let mut cipher = match Crypter::new(Cipher::aes_256_gcm(),Mode::Decrypt,&kdf_client, Some(&iv)){
             Ok(cipher)=>cipher,
-            Err(e)=>{
-                println!("Erreur lors que la création du cipher{}", e.errors()[0].to_string());
+            Err(_)=>{
+                log::info!("Erreur lors que la création du cipher");
                 return Err(APIError::KDFError)
             }
         };
         let _ = match cipher.set_tag(tag){
             Ok(_)=>(),
             Err(_)=>{
-                println!("Erreur lors de l'injection du tag GCM key_1");
+                log::info!("Erreur lors de l'injection du tag GCM key_1");
                 return Err(APIError::KDFError)
             }
         };
@@ -399,14 +398,14 @@ impl Auth {
         let mut len_data = match cipher.update(&ciphertext, &mut data){
             Ok(len)=>len,
             Err(_)=>{
-                println!("Erreur lors du déchiffrement de la clé");
+                log::info!("Erreur lors du déchiffrement de la clé");
                 return Err(APIError::KDFError)
             }
         };
         len_data += match cipher.finalize(&mut data[len_data..]){
             Ok(len)=>len,
             Err(_)=>{
-                println!("Erreur lors du dechiffrement de la clé finale");
+                log::info!("Erreur lors du dechiffrement de la clé finale");
                 return Err(APIError::KDFError)
             }
         };
@@ -417,32 +416,31 @@ impl Auth {
 
     pub async fn delete_master_key_file(&self, uuid: &String)->Result<(), APIError>{
         let filename = format!("{}/{}/.config/borg/keys/srv_repos_{}_repo", CLIENT_DIRECTORY, uuid, uuid);
-        println!("Supression de la clé{}", filename);
         let output = match self.ssh_connexion.command("shred").args(["-u", &filename]).output().await{
             Ok(o)=>o,
             Err(_)=>{
-                println!("Erreur connexion ssh supression clé borg delete_master_key_2_file");
+                log::info!("Erreur connexion ssh supression clé borg delete_master_key_2_file");
                 return Err(APIError::Ssh)
             }
         };
         let stdout = match String::from_utf8(output.stdout.clone()){
             Ok(out)=>out,
             Err(_)=>{
-                println!("Erreur conversion stdout UTF8 delete_master_2_key_file");
+                log::info!("Erreur conversion stdout UTF8 delete_master_2_key_file");
                 return Err(APIError::UTF8)
             }
         };
         let stderr = match String::from_utf8(output.stderr.clone()){
             Ok(out)=>out,
             Err(_)=>{
-                println!("Erreur conversion stderr UTF8 delete_master_2_key_file");
+                log::info!("Erreur conversion stderr UTF8 delete_master_2_key_file");
                 return Err(APIError::UTF8)
             }
         };
         if ! output.status.success(){
-            println!("Erreur lors de la supression de la clé borg : \nStdout: {}\nErreur: {}", stdout, stderr);
+            log::info!("Erreur lors de la supression de la clé borg : \nStdout: {}\nErreur: {}", stdout, stderr);
         }
-        println!("Clé suprimer {}", filename);
+        log::info!("Clé suprimer {}", uuid);
         return Ok(())
     }
 
@@ -456,12 +454,12 @@ impl Auth {
             ){
                 Ok(t)=>t,
                 Err(e)=>{
-                    println!("le decodage du token c'est mal déroulé");
+                    log::info!("le decodage du token c'est mal déroulé");
                     if e.into_kind() ==  ErrorKind::ExpiredSignature{
-                        println!("Le cookie Bearer a expiré");
+                        log::info!("Le cookie Bearer a expiré");
                         return Err(APIError::Expired)
                     }else{
-                        println!("Erreur inconnue concernant la validation du cookie");
+                        log::info!("Erreur inconnue concernant la validation du cookie");
                         return Err(APIError::ErrorBearer)
                     }
                 }
@@ -493,7 +491,7 @@ impl Auth {
         match encode(&header, &credentials, &EncodingKey::from_secret(jwt_secret.as_bytes())){
             Ok(token) => return Ok(token),
             Err(e)=> {
-                println!("Erreu lors de l'encodage du token create_token {}", e.to_string());
+                log::info!("Erreu lors de l'encodage du token create_token {}", e.to_string());
                 return Err(APIError::EncodeToken)
             }
         };
@@ -514,8 +512,8 @@ impl Auth {
             MEMORY_COST, 
             &mut out
         ){
-            Err(e)=>{
-                println!("Erreur lors de la création du kdf : {}", e.to_string());
+            Err(_)=>{
+                log::info!("Erreur lors de la création du kdf");
                 return Err(APIError::KDFError)
             },
             Ok(_)=>return Ok(out)

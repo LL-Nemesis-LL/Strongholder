@@ -75,7 +75,6 @@ fn get_log_filename(archive: ArchiveContent, uuid: &String)->Result<String, APIE
     let log_filename = format!("{}_{}.log",first_part, uuid);
     let mut log_path = None;
     for file in archive.archive_content{
-        println!("file : {}", &file.path);
         if file.path.contains(&log_filename){
             log_path = Some(file.path);
             break;
@@ -84,7 +83,7 @@ fn get_log_filename(archive: ArchiveContent, uuid: &String)->Result<String, APIE
     match log_path {
         Some(path)=>Ok(path),
         None=>{
-            println!("Lors du listing des logs, le fichier {} n'a pas été trouvé dans l'archive {}", log_filename, archive.archive_name);
+            log::info!("Lors du listing des logs, le fichier {} n'a pas été trouvé dans l'archive {}", log_filename, archive.archive_name);
             Err(APIError::Script)}
     }
 }
@@ -94,24 +93,24 @@ async fn retore_log_file(uuid: &String, ssh_connexion:Arc<Session>, archive_name
     let script_name = String::from("/usr/local/sbin/restore.sh");
     let output = match ssh_connexion.command("sudo").args([&script_name, uuid, archive_name, &log_path]).output().await{
         Ok(o)=>o,
-        Err(_)=>{println!("connexion ssh erreur");return Err(APIError::Ssh)}
+        Err(_)=>{log::info!("connexion ssh erreur");return Err(APIError::Ssh)}
     };
     let stdout = match String::from_utf8(output.stdout.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stdout UTF8 retore_log_file");
+            log::info!("Erreur conversion stdout UTF8 retore_log_file");
             return Err(APIError::UTF8)
         }
     };
     let stderr = match String::from_utf8(output.stderr.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stderr UTF8 retore_log_file");
+            log::info!("Erreur conversion stderr UTF8 retore_log_file");
             return Err(APIError::UTF8)
         }
     };
     if ! output.status.success(){
-        println!("Erreur lors de la restoration du fichier de logs {}\nstdout {}\n stderr: {}", log_path ,&stdout, &stderr);
+        log::info!("Erreur lors de la restoration du fichier de logs {}\nstdout {}\n stderr: {}", log_path ,&stdout, &stderr);
         return Err(APIError::Script)
     }
     Ok(())
@@ -124,24 +123,24 @@ async fn get_log_file(uuid: &String, ssh_connexion:Arc<Session>, archive_name: &
     };
     let output = match ssh_connexion.command("cat").arg(format!("/srv/repos/{}/restore/{}_{}.log", uuid, first_part, uuid)).output().await{
         Ok(o)=>o,
-        Err(_)=>{println!("connexion ssh erreur");return Err(APIError::Ssh)}
+        Err(_)=>{log::info!("connexion ssh erreur");return Err(APIError::Ssh)}
     };
     let stdout = match String::from_utf8(output.stdout.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stdout UTF8 get_log_file");
+            log::info!("Erreur conversion stdout UTF8 get_log_file");
             return Err(APIError::UTF8)
         }
     };
     let stderr = match String::from_utf8(output.stderr.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stderr UTF8 get_log_file");
+            log::info!("Erreur conversion stderr UTF8 get_log_file");
             return Err(APIError::UTF8)
         }
     };
     if ! output.status.success(){
-        println!("Erreur lors de la récupération du fichier {}\nstdout {}\n stderr: {}", log_path ,&stdout, &stderr);
+        log::info!("Erreur lors de la récupération du fichier {}\nstdout {}\n stderr: {}", log_path ,&stdout, &stderr);
         return Err(APIError::Script)
     }
     Ok(stdout)
@@ -153,24 +152,24 @@ async fn delete_log_file(uuid: &String, ssh_connexion:Arc<Session>, archive_name
     };
     let output = match ssh_connexion.command("rm").arg(format!("/srv/repos/{}/restore/{}_{}.log", uuid, first_part, uuid)).output().await{
         Ok(o)=>o,
-        Err(_)=>{println!("connexion ssh erreur");return Err(APIError::Ssh)}
+        Err(_)=>{log::info!("connexion ssh erreur");return Err(APIError::Ssh)}
     };
     let stdout = match String::from_utf8(output.stdout.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stdout UTF8 delete_log_file");
+            log::info!("Erreur conversion stdout UTF8 delete_log_file");
             return Err(APIError::UTF8)
         }
     };
     let stderr = match String::from_utf8(output.stderr.clone()){
         Ok(out)=>out,
         Err(_)=>{
-            println!("Erreur conversion stderr UTF8 delete_log_file");
+            log::info!("Erreur conversion stderr UTF8 delete_log_file");
             return Err(APIError::UTF8)
         }
     };
     if ! output.status.success(){
-        println!("Erreur lors de la supression du fichier {}\nstdout {}\n stderr: {}", log_path ,&stdout, &stderr);
+        log::info!("Erreur lors de la supression du fichier {}\nstdout {}\n stderr: {}", log_path ,&stdout, &stderr);
         return Err(APIError::Script)
     }
     Ok(())

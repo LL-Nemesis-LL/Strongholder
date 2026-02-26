@@ -14,15 +14,13 @@ async fn get_restore(req: HttpRequest, auth: web::Data<Auth>, body: String)-> Re
     };
 
     let credentials=Auth::decode_token(cookie.value())?;
-    println!("get_restore pour {}", credentials.id);
+    log::info!("User : {}", credentials.id);
     let _ = auth.restore_master_key_file(&credentials).await?;
 
     if body.len() == 0{
         return Err(APIError::ValidInput)
     }
-    println!("{}" , &body);
     let (file, file_name) = dertermining_restore_mode(&credentials.id, &body, auth.ssh_connexion.clone(), auth.sftp_connexion.clone()).await?;
-    println!("{}", &file_name);
     let reader = TokioCompatFile::from(file);
     let stream = StreamBuffer::new(reader);
     auth.delete_master_key_file(&credentials.id).await?;

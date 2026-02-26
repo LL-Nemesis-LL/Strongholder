@@ -18,7 +18,7 @@ async fn get_list(req: HttpRequest, auth: web::Data<Auth>, body: String)->Result
         return Err(APIError::NoCookieBearer)
     };
     let credentials= Auth::decode_token(cookie.value())?;
-    println!("get list pour l'utilisateur : {}", credentials.id);
+    log::info!("User : {}", credentials.id);
 
     let _ = auth.restore_master_key_file(&credentials).await?;
     if body.len() == 0{
@@ -29,7 +29,7 @@ async fn get_list(req: HttpRequest, auth: web::Data<Auth>, body: String)->Result
         let archive: Archive = match serde_json::from_str(body.as_str()){
             Ok(o)=>o,
             Err(_)=>{
-                println!("Erreur lors de la conversion en json dans get_list");
+                log::info!("Erreur lors de la conversion en json dans get_list");
                 return Err(APIError::Json)
             }
         };

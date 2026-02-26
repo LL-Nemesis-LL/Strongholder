@@ -16,7 +16,7 @@ async fn signin(id: web::Json<Login>, auth: web::Data<Auth>) -> Result<HttpRespo
     .secure(true)
     .http_only(true)
     .finish();
-    println!("User: {} signin", id.username);
+    log::info!("User: {}", id.username);
     Ok(HttpResponse::Ok()
     .append_header(("Set-Cookie", cookie.to_string()))
     .body(""))

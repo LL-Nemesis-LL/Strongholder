@@ -12,8 +12,8 @@ pub async fn install_client_tunnel_key(uuid: String, ssh_key:&String, filepath:S
     /* Execution du script d'ajout de la clé ssh */
     let script_path=String::from("/usr/local/sbin/install_client_tunnel_key.sh");
     match ssh_connexion.command("sudo").args([&script_path, &uuid, &filepath]).output().await{
-        Ok(_)=>println!("script install client tunnel key"),
-        Err(e)=>println!("{}", e.to_string())
+        Ok(_)=>log::info!("script install client tunnel key"),
+        Err(e)=>log::info!("{}", e.to_string())
     };
     // suppresion de la clé
     let _ = ssh_connexion.command("rm").arg(filepath).output().await;

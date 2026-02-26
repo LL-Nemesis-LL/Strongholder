@@ -10,7 +10,7 @@ async fn get_log(req: HttpRequest, auth: web::Data<Auth>)->Result<HttpResponse, 
         return Err(APIError::NoCookieBearer)
     };
     let credentials= Auth::decode_token(cookie.value())?;
-    println!("get_log pour {}", credentials.id);
+    log::info!("User {}", credentials.id);
 
     let _ = auth.restore_master_key_file(&credentials).await?;
     let logs = list_log_content(&credentials.id, auth.ssh_connexion.clone()).await?;
