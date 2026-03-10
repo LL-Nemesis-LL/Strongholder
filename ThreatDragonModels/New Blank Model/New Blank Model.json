@@ -19,6 +19,35 @@
         "cells": [
           {
             "position": {
+              "x": 360,
+              "y": 260.00000000000017
+            },
+            "size": {
+              "width": 600,
+              "height": 100
+            },
+            "visible": true,
+            "shape": "trust-boundary-box",
+            "id": "cf0a6f80-4c8e-450c-b86b-758d0ea8f7b4",
+            "zIndex": -1,
+            "data": {
+              "type": "tm.BoundaryBox",
+              "name": "Trust Boundary",
+              "description": "",
+              "isTrustBoundary": true,
+              "hasOpenThreats": false,
+              "crossingFlows": [
+                "bfdfd368-948c-4fde-a459-3c0dcf530cae"
+              ],
+              "containedElements": [
+                "7a53dbb4-78a0-47e9-872f-6e224346f344",
+                "653e3503-6f7f-4e2e-abec-57fce4992726",
+                "c8367025-705f-4a80-912c-2c6fa4788eeb"
+              ]
+            }
+          },
+          {
+            "position": {
               "x": 190,
               "y": 10
             },
@@ -62,6 +91,7 @@
             },
             "visible": true,
             "shape": "actor",
+            "zIndex": 2,
             "ports": {
               "groups": {
                 "top": {
@@ -145,7 +175,6 @@
               ]
             },
             "id": "20ac8f17-be0e-4a6d-967c-773402905b5a",
-            "zIndex": 2,
             "data": {
               "type": "tm.Actor",
               "name": "Client",
@@ -179,6 +208,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 3,
             "ports": {
               "groups": {
                 "top": {
@@ -262,7 +292,6 @@
               ]
             },
             "id": "7a53dbb4-78a0-47e9-872f-6e224346f344",
-            "zIndex": 3,
             "data": {
               "type": "tm.Process",
               "name": "API Gateway",
@@ -299,6 +328,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 4,
             "ports": {
               "groups": {
                 "top": {
@@ -382,7 +412,6 @@
               ]
             },
             "id": "653e3503-6f7f-4e2e-abec-57fce4992726",
-            "zIndex": 4,
             "data": {
               "type": "tm.Process",
               "name": "Service Backend",
@@ -419,6 +448,7 @@
             },
             "visible": true,
             "shape": "actor",
+            "zIndex": 5,
             "ports": {
               "groups": {
                 "top": {
@@ -502,7 +532,6 @@
               ]
             },
             "id": "c8367025-705f-4a80-912c-2c6fa4788eeb",
-            "zIndex": 5,
             "data": {
               "type": "tm.Actor",
               "name": "BDD",
@@ -613,7 +642,9 @@
               "isPublicNetwork": true,
               "protocol": "HTTP",
               "threats": [],
-              "trustBoundaryIds": []
+              "trustBoundaryIds": [
+                "cf0a6f80-4c8e-450c-b86b-758d0ea8f7b4"
+              ]
             },
             "labels": [
               "GET /products/id"
