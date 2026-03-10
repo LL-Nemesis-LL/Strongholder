@@ -28,8 +28,8 @@
             },
             "visible": true,
             "shape": "trust-boundary-box",
-            "id": "cf0a6f80-4c8e-450c-b86b-758d0ea8f7b4",
             "zIndex": -1,
+            "id": "cf0a6f80-4c8e-450c-b86b-758d0ea8f7b4",
             "data": {
               "type": "tm.BoundaryBox",
               "name": "Trust Boundary",
@@ -548,122 +548,6 @@
             "shape": "flow",
             "attrs": {
               "line": {
-                "stroke": "red",
-                "strokeWidth": 2.5,
-                "targetMarker": {
-                  "name": "block"
-                },
-                "sourceMarker": {
-                  "name": ""
-                },
-                "strokeDasharray": null
-              }
-            },
-            "width": 200,
-            "height": 100,
-            "zIndex": 10,
-            "connector": "smooth",
-            "data": {
-              "type": "tm.Flow",
-              "name": "sql query",
-              "description": "",
-              "outOfScope": false,
-              "isTrustBoundary": false,
-              "reasonOutOfScope": "",
-              "hasOpenThreats": true,
-              "isBidirectional": false,
-              "isEncrypted": false,
-              "isPublicNetwork": false,
-              "protocol": "SQL",
-              "threats": [
-                {
-                  "id": "7dffd87c-1782-4acd-8313-d924ad3aca61",
-                  "title": "New STRIDE threat",
-                  "status": "Open",
-                  "severity": "TBD",
-                  "type": "Information disclosure",
-                  "description": "Provide a description for this threat",
-                  "mitigation": "Provide remediation for this threat or a reason if status is N/A",
-                  "modelType": "STRIDE",
-                  "new": false,
-                  "number": 1,
-                  "score": ""
-                }
-              ],
-              "trustBoundaryIds": [],
-              "threatFrequency": {
-                "tampering": 0,
-                "informationDisclosure": 1,
-                "denialOfService": 0
-              }
-            },
-            "labels": [
-              "sql query"
-            ],
-            "id": "6497497e-659e-4db8-ad12-16c17681bd9a",
-            "source": {
-              "cell": "653e3503-6f7f-4e2e-abec-57fce4992726",
-              "port": "94cfb1a1-1cc8-49f7-9b59-41d8b2dff514"
-            },
-            "target": {
-              "cell": "c8367025-705f-4a80-912c-2c6fa4788eeb",
-              "port": "675f3033-d7e8-429b-be6f-c60564f6d52c"
-            },
-            "vertices": []
-          },
-          {
-            "shape": "flow",
-            "attrs": {
-              "line": {
-                "stroke": "#333333",
-                "targetMarker": {
-                  "name": "block"
-                },
-                "sourceMarker": {
-                  "name": ""
-                },
-                "strokeDasharray": null
-              }
-            },
-            "width": 200,
-            "height": 100,
-            "zIndex": 10,
-            "connector": "smooth",
-            "data": {
-              "type": "tm.Flow",
-              "name": "GET /products/id",
-              "description": "",
-              "outOfScope": false,
-              "isTrustBoundary": false,
-              "reasonOutOfScope": "",
-              "hasOpenThreats": false,
-              "isBidirectional": false,
-              "isEncrypted": false,
-              "isPublicNetwork": true,
-              "protocol": "HTTP",
-              "threats": [],
-              "trustBoundaryIds": [
-                "cf0a6f80-4c8e-450c-b86b-758d0ea8f7b4"
-              ]
-            },
-            "labels": [
-              "GET /products/id"
-            ],
-            "id": "bfdfd368-948c-4fde-a459-3c0dcf530cae",
-            "source": {
-              "x": 220,
-              "y": 310
-            },
-            "target": {
-              "cell": "7a53dbb4-78a0-47e9-872f-6e224346f344",
-              "port": "8406d1f9-9f23-4647-80cc-b7d15df05127"
-            },
-            "vertices": []
-          },
-          {
-            "shape": "flow",
-            "attrs": {
-              "line": {
                 "stroke": "#333333",
                 "targetMarker": {
                   "name": "block"
@@ -706,12 +590,147 @@
               "port": "8406d1f9-9f23-4647-80cc-b7d15df05127"
             },
             "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "red",
+                "strokeWidth": 2.5,
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "GET /products/id",
+              "description": "",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": true,
+              "isBidirectional": false,
+              "isEncrypted": false,
+              "isPublicNetwork": true,
+              "protocol": "HTTP",
+              "threats": [
+                {
+                  "id": "b5e42723-e71d-46d6-83ce-cb47edf95b17",
+                  "title": "New STRIDE threat",
+                  "status": "Open",
+                  "severity": "Critical",
+                  "type": "Denial of service",
+                  "description": "DDOS",
+                  "mitigation": "",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 2,
+                  "score": ""
+                }
+              ],
+              "trustBoundaryIds": [
+                "cf0a6f80-4c8e-450c-b86b-758d0ea8f7b4"
+              ],
+              "threatFrequency": {
+                "tampering": 0,
+                "informationDisclosure": 0,
+                "denialOfService": 1
+              }
+            },
+            "labels": [
+              "GET /products/id"
+            ],
+            "id": "bfdfd368-948c-4fde-a459-3c0dcf530cae",
+            "source": {
+              "x": 220,
+              "y": 310
+            },
+            "target": {
+              "cell": "7a53dbb4-78a0-47e9-872f-6e224346f344",
+              "port": "8406d1f9-9f23-4647-80cc-b7d15df05127"
+            },
+            "vertices": []
+          },
+          {
+            "shape": "flow",
+            "attrs": {
+              "line": {
+                "stroke": "#333333",
+                "targetMarker": {
+                  "name": "block"
+                },
+                "sourceMarker": {
+                  "name": ""
+                },
+                "strokeDasharray": null
+              }
+            },
+            "width": 200,
+            "height": 100,
+            "zIndex": 10,
+            "connector": "smooth",
+            "data": {
+              "type": "tm.Flow",
+              "name": "sql query",
+              "description": "",
+              "outOfScope": false,
+              "isTrustBoundary": false,
+              "reasonOutOfScope": "",
+              "hasOpenThreats": false,
+              "isBidirectional": false,
+              "isEncrypted": false,
+              "isPublicNetwork": false,
+              "protocol": "SQL",
+              "threats": [
+                {
+                  "id": "7dffd87c-1782-4acd-8313-d924ad3aca61",
+                  "title": "New STRIDE threat",
+                  "status": "Mitigated",
+                  "severity": "TBD",
+                  "type": "Information disclosure",
+                  "description": "Des injections SQL peut subvenir et peut amener des utilisateurs et extraits des informations qu'ils ne sont pas censés avec accès",
+                  "mitigation": "Faire des requêtes préparés",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 1,
+                  "score": ""
+                }
+              ],
+              "trustBoundaryIds": [],
+              "threatFrequency": {
+                "tampering": 0,
+                "informationDisclosure": 3,
+                "denialOfService": 0
+              }
+            },
+            "labels": [
+              "sql query"
+            ],
+            "id": "6497497e-659e-4db8-ad12-16c17681bd9a",
+            "source": {
+              "cell": "653e3503-6f7f-4e2e-abec-57fce4992726",
+              "port": "94cfb1a1-1cc8-49f7-9b59-41d8b2dff514"
+            },
+            "target": {
+              "cell": "c8367025-705f-4a80-912c-2c6fa4788eeb",
+              "port": "675f3033-d7e8-429b-be6f-c60564f6d52c"
+            },
+            "vertices": []
           }
         ]
       }
     ],
     "diagramTop": 1,
     "reviewer": "",
-    "threatTop": 1
+    "threatTop": 2
   }
 }
