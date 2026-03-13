@@ -19,11 +19,11 @@
         "cells": [
           {
             "position": {
-              "x": 470,
-              "y": 90.00000000000136
+              "x": 410,
+              "y": 90.00000000000051
             },
             "size": {
-              "width": 730,
+              "width": 790,
               "height": 180
             },
             "visible": true,
@@ -37,9 +37,10 @@
               "isTrustBoundary": true,
               "hasOpenThreats": false,
               "crossingFlows": [
-                "3d416a53-4256-4223-b11f-178dbf316847"
+                "b51e529c-f655-4fc6-b787-bad87b8f0cd9"
               ],
               "containedElements": [
+                "083da547-0e7b-4fb9-91f7-d5ea43891904",
                 "7ab4be03-db5a-4425-9414-48885de486aa",
                 "48561a96-fa88-4246-b3be-bd62085df0e8"
               ]
@@ -47,7 +48,7 @@
           },
           {
             "position": {
-              "x": 92.5,
+              "x": 22.5,
               "y": 130
             },
             "size": {
@@ -311,7 +312,10 @@
               "isWebApplication": true,
               "privilegeLevel": "",
               "threats": []
-            }
+            },
+            "children": [
+              "28225ed6-630d-419d-902a-7e5395338bf1"
+            ]
           },
           {
             "position": {
@@ -628,9 +632,7 @@
               "isPublicNetwork": false,
               "protocol": "HTTP",
               "threats": [],
-              "trustBoundaryIds": [
-                "a43c6655-f630-437c-8f80-016dc235ad1b"
-              ]
+              "trustBoundaryIds": []
             },
             "labels": [
               "HTTP Request"
@@ -643,7 +645,8 @@
             "target": {
               "cell": "7ab4be03-db5a-4425-9414-48885de486aa",
               "port": "7818b122-1562-4523-893d-690b5eeca7a8"
-            }
+            },
+            "vertices": []
           },
           {
             "shape": "flow",
@@ -673,7 +676,7 @@
               "hasOpenThreats": false,
               "isBidirectional": false,
               "isEncrypted": true,
-              "isPublicNetwork": false,
+              "isPublicNetwork": true,
               "protocol": "HTTP",
               "threats": [
                 {
@@ -703,7 +706,9 @@
                   "score": ""
                 }
               ],
-              "trustBoundaryIds": [],
+              "trustBoundaryIds": [
+                "a43c6655-f630-437c-8f80-016dc235ad1b"
+              ],
               "threatFrequency": {
                 "tampering": 0,
                 "informationDisclosure": 0,
