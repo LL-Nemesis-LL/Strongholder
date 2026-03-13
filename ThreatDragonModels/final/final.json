@@ -28,8 +28,8 @@
             },
             "visible": true,
             "shape": "trust-boundary-box",
-            "id": "a43c6655-f630-437c-8f80-016dc235ad1b",
             "zIndex": -1,
+            "id": "a43c6655-f630-437c-8f80-016dc235ad1b",
             "data": {
               "type": "tm.BoundaryBox",
               "name": "Trust Boundary",
@@ -67,6 +67,7 @@
             },
             "visible": true,
             "shape": "actor",
+            "zIndex": 2,
             "ports": {
               "groups": {
                 "top": {
@@ -150,7 +151,6 @@
               ]
             },
             "id": "2b8d03d6-5f2a-4e63-94ee-14ab812250b7",
-            "zIndex": 2,
             "data": {
               "type": "tm.Actor",
               "name": "Client/Internet",
@@ -165,7 +165,7 @@
                   "id": "f26e0d88-9168-4b18-8c04-09855daa55c7",
                   "title": "Leak Credentials",
                   "status": "Mitigated",
-                  "severity": "Low",
+                  "severity": "Critical",
                   "type": "Spoofing",
                   "description": "Le hash du mot de passe du client à fuité et l'attaquant veux se connecter à compte du client avec ses identifiants",
                   "mitigation": "Un connexion par multi-facteur est implémenté demandant un code OTP enregistré sur une application d'authentification",
@@ -189,9 +189,16 @@
                 }
               ],
               "threatFrequency": {
-                "spoofing": 3,
+                "spoofing": 4,
                 "repudiation": 0
               }
+            },
+            "tools": {
+              "items": [
+                "boundary",
+                "button-remove"
+              ],
+              "name": null
             }
           },
           {
@@ -215,6 +222,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 6,
             "ports": {
               "groups": {
                 "top": {
@@ -298,7 +306,6 @@
               ]
             },
             "id": "083da547-0e7b-4fb9-91f7-d5ea43891904",
-            "zIndex": 6,
             "data": {
               "type": "tm.Process",
               "name": "Nginx Reverse Proxy",
@@ -311,7 +318,55 @@
               "handlesGoodsOrServices": true,
               "isWebApplication": true,
               "privilegeLevel": "",
-              "threats": []
+              "threats": [
+                {
+                  "id": "8415f935-7eb4-48b9-9649-4ea6d0f7d6b8",
+                  "title": "Erreur verbeuse",
+                  "status": "Mitigated",
+                  "severity": "Low",
+                  "type": "Information disclosure",
+                  "description": "Un attaquant peut tenter faire une requête HTTP avec pour but de produire une erreur et tenter de récupérer la version du serveur ou extraire des fichiers avec l'autoindex",
+                  "mitigation": "Le serveur Nginx est configurer pour ne pas retourné la version (server_tokens off) et l'autoindex est désactiver",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 7,
+                  "score": ""
+                },
+                {
+                  "id": "0f6fccec-bab0-40f1-816d-7b841784c010",
+                  "title": "DOS",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Denial of service",
+                  "description": "Un fail2ban est implémenté et refusera toute connection avec une IP qui envoie plus de 100 par seconde",
+                  "mitigation": "Un attaquant puis envoyer énormément de requête dans un court laps de temps afin de surcharger le service et le rendre indisponible",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 8,
+                  "score": ""
+                },
+                {
+                  "id": "ebb346a6-1058-4531-8adb-b7082b75f876",
+                  "title": "DDOS",
+                  "status": "Mitigated",
+                  "severity": "Critical",
+                  "type": "Denial of service",
+                  "description": "Plusieurs client avec des adresses IP différentes peuvent envoyé simultanément plusieurs requête afin de surcharger le service et rendre le service indisponible",
+                  "mitigation": "Les serveurs étant hébergé chez OVH, nous utilisons leur solution contre la DDOS",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 9,
+                  "score": ""
+                }
+              ],
+              "threatFrequency": {
+                "spoofing": 0,
+                "tampering": 0,
+                "repudiation": 0,
+                "informationDisclosure": 4,
+                "denialOfService": 6,
+                "elevationOfPrivilege": 0
+              }
             },
             "children": [
               "28225ed6-630d-419d-902a-7e5395338bf1"
@@ -338,6 +393,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 7,
             "ports": {
               "groups": {
                 "top": {
@@ -421,7 +477,6 @@
               ]
             },
             "id": "7ab4be03-db5a-4425-9414-48885de486aa",
-            "zIndex": 7,
             "data": {
               "type": "tm.Process",
               "name": "FastAPI",
@@ -447,13 +502,26 @@
                   "new": false,
                   "number": 6,
                   "score": ""
+                },
+                {
+                  "id": "82bd126a-6085-4fcf-88c5-bf83b27acf2d",
+                  "title": "Erreur verbeuse",
+                  "status": "Mitigated",
+                  "severity": "Low",
+                  "type": "Information disclosure",
+                  "description": "Un attaque peut provoquer une erreur et tenter d'exfiltrer des informations sur le fonctionne ou les version des fonctions utilisées ",
+                  "mitigation": "En cas d'erreur retourne une réponse génériquer et logguer l'erreur",
+                  "modelType": "STRIDE",
+                  "new": false,
+                  "number": 10,
+                  "score": ""
                 }
               ],
               "threatFrequency": {
                 "spoofing": 0,
                 "tampering": 0,
                 "repudiation": 0,
-                "informationDisclosure": 0,
+                "informationDisclosure": 1,
                 "denialOfService": 0,
                 "elevationOfPrivilege": 1
               }
@@ -480,6 +548,7 @@
             },
             "visible": true,
             "shape": "process",
+            "zIndex": 8,
             "ports": {
               "groups": {
                 "top": {
@@ -563,7 +632,6 @@
               ]
             },
             "id": "48561a96-fa88-4246-b3be-bd62085df0e8",
-            "zIndex": 8,
             "data": {
               "type": "tm.Process",
               "name": "BDD",
@@ -581,7 +649,7 @@
                   "id": "22470a1b-3c1f-4f61-868f-f34972900218",
                   "title": "Injection SQL",
                   "status": "Mitigated",
-                  "severity": "Low",
+                  "severity": "Critical",
                   "type": "Information disclosure",
                   "description": "Un attaquant peut formuler sa requête d'une manière qu'elle exécuter n'importe quelle requête souhaiter par l'attaquant",
                   "mitigation": "Des requêtes préparées sont utilisées",
@@ -595,7 +663,7 @@
                 "spoofing": 0,
                 "tampering": 0,
                 "repudiation": 0,
-                "informationDisclosure": 1,
+                "informationDisclosure": 2,
                 "denialOfService": 0,
                 "elevationOfPrivilege": 0
               }
@@ -678,41 +746,14 @@
               "isEncrypted": true,
               "isPublicNetwork": true,
               "protocol": "HTTP",
-              "threats": [
-                {
-                  "id": "d6e3552f-efbc-4b13-ae07-a3f7138e837f",
-                  "title": "DOS",
-                  "status": "Mitigated",
-                  "severity": "Low",
-                  "type": "Denial of service",
-                  "description": "Un fail2ban est implémenté et refusera toute connection avec une IP qui envoie plus de 100 par seconde",
-                  "mitigation": "Un attaquant puis envoyer énormément de requête dans un court laps de temps afin de surcharger le service et le rendre indisponible",
-                  "modelType": "STRIDE",
-                  "new": false,
-                  "number": 1,
-                  "score": ""
-                },
-                {
-                  "id": "d6434268-7261-4b42-bf97-fff0216107a0",
-                  "title": "DDOS",
-                  "status": "Mitigated",
-                  "severity": "Medium",
-                  "type": "Denial of service",
-                  "description": "Plusieurs client avec des adresses IP différentes peuvent envoyé simultanément plusieurs requête afin de surcharger le service et rendre le service indisponible",
-                  "mitigation": "Les serveurs étant hébergé chez OVH, nous utilisons leur solution contre la DDOS",
-                  "modelType": "STRIDE",
-                  "new": false,
-                  "number": 2,
-                  "score": ""
-                }
-              ],
+              "threats": [],
               "trustBoundaryIds": [
                 "a43c6655-f630-437c-8f80-016dc235ad1b"
               ],
               "threatFrequency": {
                 "tampering": 0,
                 "informationDisclosure": 0,
-                "denialOfService": 3
+                "denialOfService": 1
               }
             },
             "labels": [
@@ -780,6 +821,6 @@
     ],
     "diagramTop": 1,
     "reviewer": "",
-    "threatTop": 6
+    "threatTop": 10
   }
 }
